@@ -1,6 +1,6 @@
 cluster,sub_cluster,sub_name,prefecture,worker_prefecture,item_label,item_label_vi,item_label_english,Price per unit,is_duplicate,is_outlier,is_same_prefecture,distance_proxy,remove,recluster,not exactly,not_exactly,expected,std,lower_std,upper_std,is_in_hensachi_range,item_amount,item_quantity,item_total,trouble_id,estimation_id,symptom_label_ja,is_emergency,description,description_vi,estimation_title,estimation_title_vi,need_info
-0,0.sub1,夜間作業費,茨城県,東京都,上記交換作業費※ﾊﾟﾝｶｰﾙｰﾊﾞ��取外し含む 夜間作業想定,Phí thay thế nêu trên đã bao gồm việc tháo dỡ các nan cửa gió của hệ thống pantograph. Giả định công việc được thực hiện vào ban đêm.,The above replacement work fee includes removal of the pantograph louvers. Nighttime work is assumed.,12000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,FALSE,12000,4,48000,,,,,,#VALUE!,,,FALSE
-0,0.sub1,夜間作業費,愛知県,東京都,上記交換作業費※夜間作業,Phí thay thế nhân công nêu trên *Công việc ban đêm,The above replacement work fee *Nighttime work,25000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,FALSE,25000,1,25000,107106,104038,その他,1,"厨房内のダクトのカバーの破損、ここから虫の一部が落下してきた
+0,0.sub1,,茨城県,東京都,上記交換作業費※ﾊﾟﾝｶｰﾙｰﾊﾞ��取外し含む 夜間作業想定,Phí thay thế nêu trên đã bao gồm việc tháo dỡ các nan cửa gió của hệ thống pantograph. Giả định công việc được thực hiện vào ban đêm.,The above replacement work fee includes removal of the pantograph louvers. Nighttime work is assumed.,12000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,FALSE,12000,4,48000,,,,,,#VALUE!,,,TRUE
+0,0.sub1,,愛知県,東京都,上記交換作業費※夜間作業,Phí thay thế nhân công nêu trên *Công việc ban đêm,The above replacement work fee *Nighttime work,25000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,FALSE,25000,1,25000,107106,104038,その他,1,"厨房内のダクトのカバーの破損、ここから虫の一部が落下してきた
  ----------------------
  大項目：厨房（機器以外）
  中項目：天井
@@ -10,13 +10,13 @@ cluster,sub_cluster,sub_name,prefecture,worker_prefecture,item_label,item_label_
 ---------------------- Danh mục chính: Bếp (không bao gồm thiết bị)
 Danh mục phụ: Trần nhà
 Danh mục nhỏ: Máy điều hòa không khí nhà bếp
-Triệu chứng: Khác",,,FALSE
-0,0.sub1,夜間作業費,岐阜県,東京都,上記張替作業費 ※夜間作業,Phí thay thế nhân công nêu trên *Công việc ban đêm,The above replacement work fee *Night work,50000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,50000,1,50000,,,,,,#VALUE!,,,FALSE
-0,0.sub1,夜間作業費,岐阜県,東京都,上記張替作業費 ※夜間作業,Phí thay thế nhân công nêu trên *Công việc ban đêm,The above replacement work fee *Night work,50000,TRUE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,50000,1,50000,,,,,,#VALUE!,,,FALSE
-0,0.sub1,夜間作業費,長野県,東京都,上記張替作業費 夜間作業 ※ｺｰｷﾝｸﾞ作業含む,Phí thay thế nêu trên đã bao gồm công việc ban đêm và trám khe hở.,The above replacement work fee includes night work and caulking.,80000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,,,,,,,,,#VALUE!,,,FALSE
-0,0.sub1,夜間作業費,長野県,東京都,上記張替作業費 夜間作業 ※ｺｰｷﾝｸﾞ作業含む,Phí thay thế nêu trên đã bao gồm công việc ban đêm và trám khe hở.,The above replacement work fee includes night work and caulking.,80000,TRUE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,,,,,,,,,#VALUE!,,,FALSE
-0,0.sub1,夜間作業費,長野県,東京都,上記張替作業費 夜間作業 ※ｺｰｷﾝｸﾞ作業含む,Phí thay thế nêu trên đã bao gồm công việc ban đêm và trám khe hở.,The above replacement work fee includes night work and caulking.,80000,TRUE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,,,,,,,,,#VALUE!,,,FALSE
-0,0.sub1,夜間作業費,宮城県,東京都,上記張替作業費※下地補修含む(夜間作���,Phí thay thế nêu trên đã bao gồm sửa chữa lớp nền (bao gồm cả làm việc ban đêm).,The above replacement work fee includes subfloor repair (including night work).,90000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,FALSE,90000,1,90000,100723,94865,その他,1,"タイル4枚，破損
+Triệu chứng: Khác",,,TRUE
+0,0.sub1,,岐阜県,東京都,上記張替作業費 ※夜間作業,Phí thay thế nhân công nêu trên *Công việc ban đêm,The above replacement work fee *Night work,50000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,50000,1,50000,,,,,,#VALUE!,,,TRUE
+0,0.sub1,,岐阜県,東京都,上記張替作業費 ※夜間作業,Phí thay thế nhân công nêu trên *Công việc ban đêm,The above replacement work fee *Night work,50000,TRUE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,50000,1,50000,,,,,,#VALUE!,,,TRUE
+0,0.sub1,,長野県,東京都,上記張替作業費 夜間作業 ※ｺｰｷﾝｸﾞ作業含む,Phí thay thế nêu trên đã bao gồm công việc ban đêm và trám khe hở.,The above replacement work fee includes night work and caulking.,80000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,,,,,,,,,#VALUE!,,,TRUE
+0,0.sub1,,長野県,東京都,上記張替作業費 夜間作業 ※ｺｰｷﾝｸﾞ作業含む,Phí thay thế nêu trên đã bao gồm công việc ban đêm và trám khe hở.,The above replacement work fee includes night work and caulking.,80000,TRUE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,,,,,,,,,#VALUE!,,,TRUE
+0,0.sub1,,長野県,東京都,上記張替作業費 夜間作業 ※ｺｰｷﾝｸﾞ作業含む,Phí thay thế nêu trên đã bao gồm công việc ban đêm và trám khe hở.,The above replacement work fee includes night work and caulking.,80000,TRUE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,TRUE,,,,,,,,,#VALUE!,,,TRUE
+0,0.sub1,,宮城県,東京都,上記張替作業費※下地補修含む(夜間作���,Phí thay thế nêu trên đã bao gồm sửa chữa lớp nền (bao gồm cả làm việc ban đêm).,The above replacement work fee includes subfloor repair (including night work).,90000,FALSE,FALSE,0,1,FALSE,FALSE,TRUE,FALSE,58375,28804.45154,29570.54846,87179.45154,FALSE,90000,1,90000,100723,94865,その他,1,"タイル4枚，破損
  ----------------------
  大項目：厨房（機器以外）
  中項目：全ポジ
@@ -25,7 +25,7 @@ Triệu chứng: Khác",,,FALSE
 ---------------------- Danh mục chính: Nhà bếp (không bao gồm thiết bị)
 Danh mục phụ: Tất cả các vị trí
 Danh mục nhỏ: Khác (Nhà bếp)
-Triệu chứng: Khác",,,FALSE
+Triệu chứng: Khác",,,TRUE
 1,1.sub1,配管資材,茨城県,東京都,配管・継手類・その他副資材,"Đường ống, phụ kiện và các vật liệu phụ trợ khác","Piping, fittings, and other auxiliary materials",6000,TRUE,FALSE,0,1,FALSE,FALSE,FALSE,FALSE,13666.66667,5715.476066,7951.1906,19382.14273,FALSE,6000,1,6000,93147,87759,給水給湯管から水漏れ,1,"配管より高温のお湯が流れ出し 湯煎機のお湯が出ない 配管が外れて高温な為近づけないので修理願いたい。
  ----------------------
  大項目：厨房（機器以外）
