@@ -85,6 +85,7 @@ import os
 from typing import Any
 
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 from dotenv import load_dotenv
@@ -134,6 +135,37 @@ def fetch_cluster_prices(
             break
         offset += page_size
     return prices
+
+
+@st.cache_data(ttl=300)
+def fetch_cluster_items(
+    sub_cluster: str, sub_name: str, large_category: str
+) -> list[dict]:
+    """Pull all items (label + price + flag) of one cluster, paginated."""
+    sb = get_supabase_client()
+    rows = []
+    page_size = 1000
+    last_id = 0
+    while True:
+        res = (
+            sb.table("item_embeddings")
+            .select("id, item_label, price_per_unit, is_in_hensachi_range, trouble_id")
+            .eq("sub_cluster", sub_cluster)
+            .eq("sub_name", sub_name)
+            .eq("large_category", large_category)
+            .gt("id", last_id)
+            .order("id", desc=False)
+            .limit(page_size)
+            .execute()
+        )
+        batch = res.data or []
+        if not batch:
+            break
+        rows.extend(batch)
+        last_id = batch[-1]["id"]
+        if len(batch) < page_size:
+            break
+    return rows
 
 
 @st.cache_resource
@@ -268,12 +300,36 @@ def compute_verdict(
     has_bounds = lower is not None and upper is not None
 
     # Price decides verdict — need_info only adds an extra warning.
-    if has_bounds and float(estimate_value) > float(upper):
-        out["verdict"] = "NOT APPROVE"
-    elif has_bounds and float(estimate_value) < float(lower):
-        out["verdict"] = "APPROVE"
-        out["note"] = "too_low"
+    # Tolerance khớp với hiển thị làm tròn (¥X,XXX): nếu giá user nhập trùng
+    # giá biên hiển thị thì coi như nằm trong range, kể cả khi biên thực có
+    # thập phân (vd lower=3485.4 hiển thị 3,485, user nhập 3485 vẫn APPROVE).
+    BOUND_TOL = 0.5
+    price = float(estimate_value)
+    if has_bounds:
+        lo, up = float(lower), float(upper)
+        if (price >= lo - BOUND_TOL) and (price <= up + BOUND_TOL):
+            out["verdict"] = "APPROVE"
+        elif price < lo - BOUND_TOL:
+            # Below the lower bound → review needed
+            out["verdict"] = "NEED REVIEW"
+            out["note"] = "too_low"
+        else:
+            # Above upper bound — compare to cluster max
+            cluster_prices = fetch_cluster_prices(
+                top1.get("sub_cluster"),
+                top1.get("sub_name"),
+                large_category,
+            )
+            cluster_max = max(cluster_prices) if cluster_prices else up
+            out["cluster_max"] = cluster_max
+            if price <= cluster_max + BOUND_TOL:
+                out["verdict"] = "NEED REVIEW"
+                out["note"] = "above_upper_within_max"
+            else:
+                out["verdict"] = "NOT APPROVE"
+                out["note"] = "above_max"
     else:
+        # No bounds available — approve by default
         out["verdict"] = "APPROVE"
 
     # need_info → flag the cluster as uncertain, regardless of verdict.
@@ -296,9 +352,10 @@ st.caption(
 LARGE_CATEGORIES = ["ホール", "厨房（機器以外）"]
 
 VERDICT_COLOR = {
-    "APPROVE":     "#16a34a",
-    "NOT APPROVE": "#dc2626",
-    "NOT FOUND":   "#6b7280",
+    "APPROVE":     "#16a34a",  # green-600
+    "NEED REVIEW": "#f59e0b",  # amber-500
+    "NOT APPROVE": "#dc2626",  # red-600
+    "NOT FOUND":   "#6b7280",  # gray-500
 }
 
 # ---------------- Session state init ----------------
@@ -455,16 +512,24 @@ def render_badge(verdict: str) -> str:
 
 def render_note(note: str | None) -> str:
     msg_map = {
-        "too_low":          "Price below historical range — please reconsider",
-        "need_info":        "Cluster lacks information — range may be unreliable",
-        "below_threshold":  "Top similarity below threshold — match is not reliable",
-        "no_matches":       "No similar items found",
-        "cluster_missing":  "Cluster stats missing for selected large_category",
+        "too_low":                  "Price below historical range — please review",
+        "above_upper_within_max":   "Price above expected range but within cluster max — please review",
+        "above_max":                "Price exceeds the maximum seen in this cluster",
+        "need_info":                "Cluster lacks information — range may be unreliable",
+        "below_threshold":          "Top similarity below threshold — match is not reliable",
+        "no_matches":               "No similar items found",
+        "cluster_missing":          "Cluster stats missing for selected large_category",
     }
     if not note:
         return ""
     msg = msg_map.get(note, note)
-    color = "#b45309" if note in ("too_low", "need_info") else "#6b7280"
+    amber = {"too_low", "above_upper_within_max", "need_info"}
+    if note in amber:
+        color = "#b45309"
+    elif note == "above_max":
+        color = "#dc2626"
+    else:
+        color = "#6b7280"
     return f'<div style="font-size:12px;color:{color};margin-top:4px;">⚠ {msg}</div>'
 
 def render_price_chart(
@@ -575,23 +640,13 @@ def render_details(r: dict):
         d4.metric("Samples used", stats.get("n_used", "-") if stats else "-")
 
         if stats:
-            st.markdown("**Price range**")
-            p1, p2, p3 = st.columns(3)
-            p1.metric("Lower bound", fmt_money(stats.get("lower_bound")))
-            p2.metric("Expected",    fmt_money(stats.get("expected")))
-            p3.metric("Upper bound", fmt_money(stats.get("upper_bound")))
-
-        # Price distribution chart
-        if stats and top1.get("sub_cluster") and top1.get("sub_name"):
-            st.markdown("**Price distribution**")
-            render_price_chart(
-                sub_cluster=top1.get("sub_cluster"),
-                sub_name=top1.get("sub_name"),
-                large_category=r.get("_large_category"),
-                stats=stats,
-                estimate_value=r.get("_estimate_value"),
+            st.markdown("**Expected (cluster center)**")
+            st.markdown(
+                f"<div style='font-size:22px;font-weight:700;'>¥{fmt_money(stats.get('expected'))}</div>",
+                unsafe_allow_html=True,
             )
 
+        # --- Top 5 similar items (moved up) ---
         if matches:
             st.markdown(f"**Top {len(matches)} similar items**")
             st.dataframe(
@@ -610,6 +665,56 @@ def render_details(r: dict):
                 use_container_width=True,
                 hide_index=True,
             )
+
+        # --- Price distribution chart ---
+        if stats and top1.get("sub_cluster") and top1.get("sub_name"):
+            st.markdown("**Price distribution**")
+            render_price_chart(
+                sub_cluster=top1.get("sub_cluster"),
+                sub_name=top1.get("sub_name"),
+                large_category=r.get("_large_category"),
+                stats=stats,
+                estimate_value=r.get("_estimate_value"),
+            )
+
+            # --- All items in this cluster, FALSE rows highlighted red ---
+            cluster_rows = fetch_cluster_items(
+                top1.get("sub_cluster"),
+                top1.get("sub_name"),
+                r.get("_large_category"),
+            )
+            if cluster_rows:
+                items_df = pd.DataFrame(cluster_rows)
+                # Order columns for readability
+                col_order = [c for c in
+                             ["id", "item_label", "price_per_unit",
+                              "is_in_hensachi_range", "trouble_id"]
+                             if c in items_df.columns]
+                items_df = items_df[col_order].sort_values(
+                    by="price_per_unit",
+                    ascending=True,
+                    na_position="last",
+                )
+
+                def highlight_false(row):
+                    if row.get("is_in_hensachi_range") is False:
+                        return ["background-color: #fee2e2"] * len(row)  # red-100
+                    return [""] * len(row)
+
+                styled = items_df.style.apply(highlight_false, axis=1).format({
+                    "price_per_unit": lambda v: "-" if pd.isna(v) else f"¥{float(v):,.0f}",
+                })
+                n_false = int((items_df["is_in_hensachi_range"] == False).sum()) \
+                    if "is_in_hensachi_range" in items_df.columns else 0
+                n_true  = int((items_df["is_in_hensachi_range"] == True).sum()) \
+                    if "is_in_hensachi_range" in items_df.columns else 0
+                st.markdown(
+                    f"**All items in this cluster** "
+                    f"(<span style='color:#16a34a'>TRUE: {n_true}</span> · "
+                    f"<span style='color:#dc2626'>FALSE: {n_false}</span>)",
+                    unsafe_allow_html=True,
+                )
+                st.dataframe(styled, use_container_width=True, hide_index=True)
 
 if st.session_state.results:
     res = st.session_state.results
