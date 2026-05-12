@@ -346,7 +346,7 @@ st.set_page_config(page_title="Approve Helper: Estimate Value Checker", layout="
 st.title("Approve Helper: Estimate Value Checker")
 st.caption(
     "Enter multiple items at once. The system embeds each item_label, "
-    "finds the closest historical cluster, and decides APPROVE / NOT APPROVE / NOT FOUND."
+    "finds the closest historical cluster, and decides APPROVE / NOT APPROVE / NEED REVIEW / NOT FOUND."
 )
 
 LARGE_CATEGORIES = ["ホール", "厨房（機器以外）"]
