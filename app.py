@@ -269,7 +269,7 @@ def compute_verdict(
         keyword_weight=1.0 - vector_weight,
     )
     out: dict[str, Any] = {
-        "verdict": "NOT FOUND",
+        "verdict": "NO REFERENCE",
         "note": None,
         "matches": matches,
         "top_sim": None,
@@ -300,18 +300,14 @@ def compute_verdict(
     has_bounds = lower is not None and upper is not None
 
     # Price decides verdict — need_info only adds an extra warning.
-    # Tolerance khớp với hiển thị làm tròn (¥X,XXX): nếu giá user nhập trùng
-    # giá biên hiển thị thì coi như nằm trong range, kể cả khi biên thực có
-    # thập phân (vd lower=3485.4 hiển thị 3,485, user nhập 3485 vẫn APPROVE).
-    BOUND_TOL = 0.5
     price = float(estimate_value)
     if has_bounds:
         lo, up = float(lower), float(upper)
-        if (price >= lo - BOUND_TOL) and (price <= up + BOUND_TOL):
-            out["verdict"] = "APPROVE"
-        elif price < lo - BOUND_TOL:
+        if lo <= price <= up:
+            out["verdict"] = "ACCEPTABLE"
+        elif price < lo:
             # Below the lower bound → review needed
-            out["verdict"] = "NEED REVIEW"
+            out["verdict"] = "REVIEW NEEDED"
             out["note"] = "too_low"
         else:
             # Above upper bound — compare to cluster max
@@ -322,15 +318,15 @@ def compute_verdict(
             )
             cluster_max = max(cluster_prices) if cluster_prices else up
             out["cluster_max"] = cluster_max
-            if price <= cluster_max + BOUND_TOL:
-                out["verdict"] = "NEED REVIEW"
+            if price <= cluster_max:
+                out["verdict"] = "REVIEW NEEDED"
                 out["note"] = "above_upper_within_max"
             else:
-                out["verdict"] = "NOT APPROVE"
+                out["verdict"] = "UNAPPROVED"
                 out["note"] = "above_max"
     else:
         # No bounds available — approve by default
-        out["verdict"] = "APPROVE"
+        out["verdict"] = "ACCEPTABLE"
 
     # need_info → flag the cluster as uncertain, regardless of verdict.
     # If a "too_low" note already exists, keep it; otherwise use "need_info".
@@ -346,16 +342,17 @@ st.set_page_config(page_title="Approve Helper: Estimate Value Checker", layout="
 st.title("Approve Helper: Estimate Value Checker")
 st.caption(
     "Enter multiple items at once. The system embeds each item_label, "
-    "finds the closest historical cluster, and decides APPROVE / NOT APPROVE / NEED REVIEW / NOT FOUND."
+    "finds the closest historical cluster, and decides "
+    "ACCEPTABLE / REVIEW NEEDED / UNAPPROVED / NO REFERENCE."
 )
 
 LARGE_CATEGORIES = ["ホール", "厨房（機器以外）"]
 
 VERDICT_COLOR = {
-    "APPROVE":     "#16a34a",  # green-600
-    "NEED REVIEW": "#f59e0b",  # amber-500
-    "NOT APPROVE": "#dc2626",  # red-600
-    "NOT FOUND":   "#6b7280",  # gray-500
+    "ACCEPTABLE":     "#16a34a",  # green-600
+    "REVIEW NEEDED": "#f59e0b",  # amber-500
+    "UNAPPROVED": "#dc2626",  # red-600
+    "NO REFERENCE":   "#6b7280",  # gray-500
 }
 
 # ---------------- Session state init ----------------
@@ -476,7 +473,7 @@ if analyze_clicked:
                 )
             except Exception as e:
                 r = {
-                    "verdict": "NOT FOUND",
+                    "verdict": "NO REFERENCE",
                     "note": f"error:{type(e).__name__}",
                     "matches": [],
                     "top_sim": None,
