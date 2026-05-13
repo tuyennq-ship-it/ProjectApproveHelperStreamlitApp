@@ -322,7 +322,7 @@ def compute_verdict(
                 out["verdict"] = "REVIEW NEEDED"
                 out["note"] = "above_upper_within_max"
             else:
-                out["verdict"] = "UNAPPROVED"
+                out["verdict"] = "NEED TO CHECK"
                 out["note"] = "above_max"
     else:
         # No bounds available — approve by default
@@ -343,7 +343,7 @@ st.title("Approve Helper: Estimate Value Checker")
 st.caption(
     "Enter multiple items at once. The system embeds each item_label, "
     "finds the closest historical cluster, and decides "
-    "ACCEPTABLE / REVIEW NEEDED / UNAPPROVED / NO REFERENCE."
+    "ACCEPTABLE / REVIEW NEEDED / NEED TO CHECK / NO REFERENCE."
 )
 
 LARGE_CATEGORIES = ["ホール", "厨房（機器以外）"]
@@ -351,7 +351,7 @@ LARGE_CATEGORIES = ["ホール", "厨房（機器以外）"]
 VERDICT_COLOR = {
     "ACCEPTABLE":     "#16a34a",  # green-600
     "REVIEW NEEDED": "#f59e0b",  # amber-500
-    "UNAPPROVED": "#dc2626",  # red-600
+    "NEED TO CHECK": "#dc2626",  # red-600
     "NO REFERENCE":   "#6b7280",  # gray-500
 }
 
