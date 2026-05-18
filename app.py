@@ -578,7 +578,7 @@ def render_price_chart(
         fig.add_trace(
             go.Scatter(
                 x=[expected, expected], y=[0, max_y],
-                mode="lines", name="expected (mean)",
+                mode="lines", name=f"expected (mean): ¥{fmt_money(expected)}",
                 line=dict(color="green"),
             )
         )
@@ -586,7 +586,7 @@ def render_price_chart(
         fig.add_trace(
             go.Scatter(
                 x=[lower, lower], y=[0, max_y],
-                mode="lines", name="lower_bound",
+                mode="lines", name=f"lower_bound: ¥{fmt_money(lower)}",
                 line=dict(color="red", dash="dash"),
             )
         )
@@ -594,7 +594,7 @@ def render_price_chart(
         fig.add_trace(
             go.Scatter(
                 x=[upper, upper], y=[0, max_y],
-                mode="lines", name="upper_bound",
+                mode="lines", name=f"upper_bound: ¥{fmt_money(upper)}",
                 line=dict(color="blue", dash="dash"),
             )
         )
@@ -615,7 +615,14 @@ def render_price_chart(
         yaxis_title="Density",
         height=420,
         showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(
+            orientation="v",
+            yanchor="top", y=0.98,
+            xanchor="right", x=0.98,
+            bgcolor="rgba(255,255,255,0.7)",
+            bordercolor="rgba(0,0,0,0.15)",
+            borderwidth=1,
+        ),
         margin=dict(t=60, b=40, l=20, r=20),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -630,11 +637,12 @@ def render_details(r: dict):
 
     with st.container(border=True):
         st.markdown("**Best match cluster**")
-        d1, d2, d3, d4 = st.columns(4)
+        d1, d2, d3, d4, d5 = st.columns(5)
         d1.metric("sub_cluster", str(top1.get("sub_cluster", "-")))
         d2.metric("sub_name",    str(top1.get("sub_name",    "-")))
         d3.metric("Similarity",  f"{top_sim:.4f}" if top_sim is not None else "-")
         d4.metric("Samples used", stats.get("n_used", "-") if stats else "-")
+        d5.metric("Std",         f"¥{fmt_money(stats.get('std'))}" if stats else "-")
 
         if stats:
             st.markdown("**Expected (cluster center)**")
