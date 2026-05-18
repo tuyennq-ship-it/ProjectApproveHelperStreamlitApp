@@ -346,7 +346,7 @@ st.caption(
     "ACCEPTABLE / REVIEW NEEDED / NEED TO CHECK / NO REFERENCE."
 )
 
-LARGE_CATEGORIES = ["ホール", "厨房（機器以外）", "事務所/トイレ", "店外"]
+LARGE_CATEGORIES = ["厨房（機器以外）", "ホール", "事務所/トイレ", "店外"]
 
 VERDICT_COLOR = {
     "ACCEPTABLE":     "#16a34a",  # green-600
